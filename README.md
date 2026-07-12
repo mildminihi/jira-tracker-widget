@@ -6,6 +6,7 @@ A native macOS menu bar app that tracks your active Jira sprint tasks across up 
 
 ```bash
 brew tap mildminihi/jira-sprint-tracker
+brew trust mildminihi/jira-sprint-tracker
 brew install --cask jira-sprint-tracker
 ```
 
