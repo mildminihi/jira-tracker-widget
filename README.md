@@ -1,6 +1,6 @@
 # Jira Sprint Tracker
 
-A native macOS menu bar app that tracks your active Jira sprint tasks across up to three project/board pairs.
+A native macOS menu bar app that tracks your active Jira sprint tasks across up to three project/board pairs, with an optional small priority-summary widget.
 
 ## Install (Homebrew)
 
@@ -17,7 +17,7 @@ brew update
 brew upgrade --cask jira-sprint-tracker
 ```
 
-After install, open **Jira Sprint Tracker** from Applications (or Spotlight). A checklist icon appears in the menu bar.
+After install, open **Jira Sprint Tracker** from Applications (or Spotlight). A checklist icon appears in the menu bar with a live summary like `3d · 5`.
 
 ### Configure Jira
 
@@ -25,6 +25,7 @@ After install, open **Jira Sprint Tracker** from Applications (or Spotlight). A 
 2. Create an [Atlassian API token](https://id.atlassian.com/manage-profile/security/api-tokens)
 3. Paste your board URL into **Quick add from board link**, or enter fields manually
 4. Click **Test Connection** → **Save**
+5. Optionally enable **Open at Login**
 
 **Board link example:**
 
@@ -37,12 +38,21 @@ Each person uses their own API token. Credentials stay on the local machine in t
 
 ## Features
 
-- Menu bar icon with a scrollable popover of sprint tasks
-- Up to 3 project + board pairs
-- Paste a Jira board URL to auto-fill project key and board ID
-- Tasks grouped by sprint and status, with progress bar and countdown
-- Click a task to open it in Jira; use the link button to copy its URL
-- Refreshes every 30 minutes, on manual refresh, and when the app becomes active
+- Menu bar summary: nearest sprint days left + non-Done count (`3d · 5`), tinted when urgent
+- Popover scope: **This board** / **All** (remembered), with board picker
+- Filters: **All / Active / In Progress** chips (default Active) + search by key/summary
+- Compact mode for denser cards
+- Open sprint / Open board links (board link hidden in All mode)
+- Copy issue URL from each task card
+- Settings: Open at Login, last refresh health, persisted Test Connection results
+- Optional **systemSmall** desktop widget: priority counts for non-Done tasks (same board scope as the app)
+- Refreshes about every 30 minutes, on manual refresh, and in the background
+
+## Optional widget
+
+1. Right-click the desktop → **Edit Widgets**
+2. Search for **Jira Priority Summary**
+3. Add the small widget
 
 ## Requirements
 
@@ -59,18 +69,19 @@ cd jira-tracker-widget
 open jira-tracker-widget.xcodeproj
 ```
 
-1. Select the **jira-tracker-widget** target → **Signing & Capabilities**
+1. Select **jira-tracker-widget** and **jira-tracker-widget-extension** → **Signing & Capabilities**
 2. Choose your **Team** and enable **Automatically manage signing**
-3. Confirm App Group: `group.supanat.wanroj.jira-tracker-widget`
+3. Confirm App Group on both targets: `group.supanat.wanroj.jira-tracker-widget`
 4. Run the **jira-tracker-widget** scheme (Cmd+R)
 
 ## Project structure
 
 ```
 jira-tracker-widget/
-├── jira-tracker-widget/   Menu bar app + Settings
-├── Shared/                Models, API client, UI, storage
-└── scripts/               Release / notarize helpers
+├── jira-tracker-widget/            Menu bar app + Settings
+├── jira-tracker-widget-extension/  Small priority summary widget
+├── Shared/                         Models, API client, UI, storage
+└── scripts/                        Release / notarize helpers
 ```
 
 ## Releasing

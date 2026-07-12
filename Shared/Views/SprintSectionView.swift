@@ -2,15 +2,26 @@ import SwiftUI
 
 struct SprintSectionView: View {
     let section: SprintSection
+    var showsOpenBoard = false
+    var isCompact = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
+        VStack(alignment: .leading, spacing: isCompact ? 6 : 8) {
+            HStack(spacing: 8) {
                 Text(section.name)
-                    .font(.headline)
+                    .font(isCompact ? .subheadline.weight(.semibold) : .headline)
                     .lineLimit(1)
                 Spacer()
                 countdownPill
+            }
+
+            HStack(spacing: 10) {
+                Link("Open sprint", destination: section.sprintURL)
+                    .font(.caption2.weight(.semibold))
+                if showsOpenBoard {
+                    Link("Open board", destination: section.boardURL)
+                        .font(.caption2.weight(.semibold))
+                }
             }
 
             ProgressView(value: section.progress)
@@ -28,7 +39,7 @@ struct SprintSectionView: View {
                     .foregroundStyle(.secondary)
 
                 ForEach(group.issues) { issue in
-                    TaskCardView(issue: issue)
+                    TaskCardView(issue: issue, isCompact: isCompact)
                 }
             }
         }

@@ -1,15 +1,19 @@
 import SwiftUI
+import WidgetKit
 
 struct ConfigView: View {
+    @ObservedObject var store: SprintDataStore
     @State private var config = AppGroupStorage.loadConfig() ?? .empty
     @State private var boardLinkInput = ""
     @State private var linkParseMessage: String?
     @State private var linkParseIsError = false
-    @State private var testResults: [ConnectionTestResult] = []
+    @State private var testResults: [ConnectionTestResult] = AppPreferencesStore.loadTestResults()
     @State private var authFailed = false
     @State private var isTesting = false
     @State private var isSaving = false
     @State private var saveMessage: String?
+    @State private var openAtLogin = LoginItemManager.isEnabled
+    @State private var loginItemMessage: String?
 
     private let apiClient = JiraAPIClient()
 
@@ -18,6 +22,30 @@ struct ConfigView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     header
+                    refreshHealthBanner
+
+                    GroupBox("Preferences") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Toggle("Open at Login", isOn: $openAtLogin)
+                                .onChange(of: openAtLogin) { _, enabled in
+                                    loginItemMessage = LoginItemManager.setEnabled(enabled)
+                                    openAtLogin = LoginItemManager.isEnabled
+                                }
+
+                            if let loginItemMessage {
+                                Text(loginItemMessage)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            }
+
+                            Toggle("Compact popover", isOn: compactBinding)
+
+                            Text("Compact densifies task cards. Board scope and filters are controlled from the menu bar popover.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
 
                     GroupBox("Jira Account") {
                         VStack(alignment: .leading, spacing: 12) {
@@ -161,15 +189,48 @@ struct ConfigView: View {
             .padding(.vertical, 14)
         }
         .frame(minWidth: 520, minHeight: 560)
+        .onAppear {
+            openAtLogin = LoginItemManager.isEnabled
+            testResults = AppPreferencesStore.loadTestResults()
+            config = AppGroupStorage.loadConfig() ?? .empty
+        }
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Jira Sprint Tracker")
                 .font(.largeTitle.bold())
-            Text("Configure your Jira credentials and project boards for the menu bar app.")
+            Text("Configure credentials, boards, and menu bar preferences.")
                 .foregroundStyle(.secondary)
         }
+    }
+
+    private var refreshHealthBanner: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: store.refreshHealth.success ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .foregroundStyle(store.refreshHealth.success ? .green : .orange)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(store.refreshHealth.message)
+                    .font(.callout)
+                if let lastUpdated = store.refreshHealth.lastUpdated {
+                    Text("Last refresh \(lastUpdated, style: .relative) ago")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+        }
+        .padding(12)
+        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private var compactBinding: Binding<Bool> {
+        Binding(
+            get: { store.preferences.isCompact },
+            set: { newValue in
+                store.updatePreferences { $0.isCompact = newValue }
+            }
+        )
     }
 
     private func labeledField(_ title: String, text: Binding<String>, prompt: String) -> some View {
@@ -249,6 +310,10 @@ struct ConfigView: View {
         }
 
         AppGroupStorage.saveConfig(config)
+        WidgetCenter.shared.reloadAllTimelines()
+        Task {
+            await store.refresh()
+        }
         saveMessage = "Saved."
     }
 
@@ -261,9 +326,10 @@ struct ConfigView: View {
         let result = await apiClient.testConnection(config: config)
         authFailed = !result.authOK
         testResults = result.results
+        AppPreferencesStore.saveTestResults(result.results)
     }
 }
 
 #Preview {
-    ConfigView()
+    ConfigView(store: SprintDataStore())
 }

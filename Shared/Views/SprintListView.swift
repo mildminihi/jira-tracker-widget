@@ -1,33 +1,46 @@
 import SwiftUI
 
 struct SprintListView: View {
-    let result: WidgetLoadResult
+    let sections: [SprintSection]
+    var showsOpenBoard = false
+    var isCompact = false
+    var emptyMessage: String?
 
     var body: some View {
-        Group {
-            switch result {
-            case let .success(sections, _):
-                ScrollView {
-                    sprintContent(sections: sections)
+        if sections.isEmpty {
+            VStack(spacing: 10) {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+                    .font(.title2)
+                    .foregroundStyle(.secondary)
+                Text(emptyMessage ?? "No tasks match the current filters.")
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding()
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: isCompact ? 10 : 14) {
+                    ForEach(sections) { section in
+                        SprintSectionView(
+                            section: section,
+                            showsOpenBoard: showsOpenBoard,
+                            isCompact: isCompact
+                        )
+                    }
                 }
-            case let .failure(error):
-                errorView(error: error)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
             }
         }
     }
+}
 
-    @ViewBuilder
-    private func sprintContent(sections: [SprintSection]) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            ForEach(sections) { section in
-                SprintSectionView(section: section)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-    }
+struct SprintErrorView: View {
+    let error: WidgetError
 
-    private func errorView(error: WidgetError) -> some View {
+    var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.title2)

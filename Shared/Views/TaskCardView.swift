@@ -3,29 +3,32 @@ import SwiftUI
 
 struct TaskCardView: View {
     let issue: JiraIssueDisplay
+    var isCompact = false
 
     @State private var didCopy = false
 
     var body: some View {
         HStack(spacing: 4) {
             Link(destination: issue.browseURL) {
-                HStack(spacing: 8) {
+                HStack(spacing: isCompact ? 6 : 8) {
                     RoundedRectangle(cornerRadius: 2)
                         .fill(PriorityColors.color(for: issue.priorityName, priorityId: issue.priorityId))
                         .frame(width: 4)
 
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: isCompact ? 2 : 4) {
                         HStack(spacing: 6) {
                             Text(issue.key)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.primary)
 
-                            Text(issue.priorityName)
-                                .font(.caption2.weight(.medium))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(.quaternary, in: Capsule())
-                                .foregroundStyle(.secondary)
+                            if !isCompact {
+                                Text(issue.priorityName)
+                                    .font(.caption2.weight(.medium))
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(.quaternary, in: Capsule())
+                                    .foregroundStyle(.secondary)
+                            }
                         }
 
                         Text(issue.summary)
@@ -48,7 +51,7 @@ struct TaskCardView: View {
             .buttonStyle(.borderless)
             .help(didCopy ? "Copied" : "Copy link")
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, isCompact ? 4 : 6)
         .padding(.leading, 8)
         .padding(.trailing, 4)
         .background(.background.opacity(0.55), in: RoundedRectangle(cornerRadius: 8))

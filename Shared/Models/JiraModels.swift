@@ -96,14 +96,27 @@ struct JiraIssue: Equatable {
     let sprintIds: [Int]
 }
 
+struct ConnectionTestResult: Identifiable, Equatable, Codable {
+    let id: UUID
+    let projectKey: String
+    let boardId: Int
+    let success: Bool
+    let message: String
+}
+
 struct JiraIssueDisplay: Identifiable, Equatable, Codable {
     let id: String
     let key: String
     let summary: String
     let statusName: String
+    let statusCategoryKey: String
     let priorityName: String
     let priorityId: String?
     let browseURL: URL
+
+    var isDone: Bool {
+        statusCategoryKey == "done"
+    }
 }
 
 struct StatusGroup: Identifiable, Equatable, Codable {
@@ -113,25 +126,23 @@ struct StatusGroup: Identifiable, Equatable, Codable {
 }
 
 struct SprintSection: Identifiable, Equatable, Codable {
-    let id: Int
+    let id: String
+    let sprintId: Int
     let name: String
     let endDate: Date?
     let progress: Double
     let daysRemaining: Int?
+    let projectKey: String
+    let boardId: Int
+    let pairId: UUID
+    let boardURL: URL
+    let sprintURL: URL
     let statusGroups: [StatusGroup]
 }
 
 enum WidgetLoadResult: Equatable {
     case success(sections: [SprintSection], jiraDomain: String)
     case failure(WidgetError)
-}
-
-struct ConnectionTestResult: Identifiable, Equatable {
-    let id: UUID
-    let projectKey: String
-    let boardId: Int
-    let success: Bool
-    let message: String
 }
 
 struct SprintListResponse: Decodable {

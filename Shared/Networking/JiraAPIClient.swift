@@ -150,6 +150,7 @@ struct JiraAPIClient {
 
         var sprintMap: [Int: JiraSprint] = [:]
         var issuesBySprint: [Int: [JiraIssue]] = [:]
+        var sprintPair: [Int: ProjectBoardPair] = [:]
         var foundOpenSprint = false
 
         for pair in config.validPairs {
@@ -168,6 +169,7 @@ struct JiraAPIClient {
 
             for sprint in openSprints {
                 sprintMap[sprint.id] = sprint
+                sprintPair[sprint.id] = pair
 
                 let issues: [JiraIssue]
                 do {
@@ -193,6 +195,7 @@ struct JiraAPIClient {
         let sections = buildSections(
             sprintMap: sprintMap,
             issuesBySprint: issuesBySprint,
+            sprintPair: sprintPair,
             jiraDomain: config.normalizedDomain
         )
 
@@ -255,6 +258,7 @@ struct JiraAPIClient {
     private func buildSections(
         sprintMap: [Int: JiraSprint],
         issuesBySprint: [Int: [JiraIssue]],
+        sprintPair: [Int: ProjectBoardPair],
         jiraDomain: String
     ) -> [SprintSection] {
         let sortedSprintIDs = issuesBySprint.keys.sorted { lhs, rhs in
@@ -266,6 +270,7 @@ struct JiraAPIClient {
         return sortedSprintIDs.compactMap { sprintID in
             guard let sprint = sprintMap[sprintID],
                   let issues = issuesBySprint[sprintID],
+                  let pair = sprintPair[sprintID],
                   !issues.isEmpty else {
                 return nil
             }
@@ -273,6 +278,9 @@ struct JiraAPIClient {
             let doneCount = issues.filter { $0.statusCategoryKey == "done" }.count
             let progress = Double(doneCount) / Double(issues.count)
             let daysRemaining = sprint.endDate.map(daysRemainingUntil)
+            let projectKey = pair.projectKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            let boardURL = URL(string: "\(jiraDomain)/jira/software/c/projects/\(projectKey)/boards/\(pair.boardId)")!
+            let sprintURL = URL(string: "\(boardURL.absoluteString)?sprint=\(sprint.id)")!
 
             let grouped = Dictionary(grouping: issues, by: \.statusName)
             let sortedStatusNames = grouped.keys.sorted()
@@ -286,6 +294,7 @@ struct JiraAPIClient {
                         key: issue.key,
                         summary: issue.summary,
                         statusName: issue.statusName,
+                        statusCategoryKey: issue.statusCategoryKey,
                         priorityName: issue.priorityName,
                         priorityId: issue.priorityId,
                         browseURL: URL(string: "\(jiraDomain)/browse/\(issue.key)")!
@@ -300,11 +309,17 @@ struct JiraAPIClient {
             }
 
             return SprintSection(
-                id: sprint.id,
+                id: "\(pair.id.uuidString)-\(sprint.id)",
+                sprintId: sprint.id,
                 name: sprint.name,
                 endDate: sprint.endDate,
                 progress: progress,
                 daysRemaining: daysRemaining,
+                projectKey: projectKey,
+                boardId: pair.boardId,
+                pairId: pair.id,
+                boardURL: boardURL,
+                sprintURL: sprintURL,
                 statusGroups: statusGroups
             )
         }

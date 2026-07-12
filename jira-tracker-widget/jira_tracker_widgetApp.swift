@@ -2,16 +2,25 @@ import SwiftUI
 
 @main
 struct jira_tracker_widgetApp: App {
+    @StateObject private var store = SprintDataStore()
+
     var body: some Scene {
         MenuBarExtra {
-            MenuBarPopoverView()
+            MenuBarPopoverView(store: store)
         } label: {
-            Image(systemName: "checklist")
+            HStack(spacing: 4) {
+                Image(systemName: "checklist")
+                if !store.menuBarTitle.isEmpty {
+                    Text(store.menuBarTitle)
+                        .monospacedDigit()
+                }
+            }
+            .foregroundStyle(store.isUrgent ? .red : .primary)
         }
         .menuBarExtraStyle(.window)
 
         Settings {
-            ConfigView()
+            ConfigView(store: store)
         }
     }
 }
