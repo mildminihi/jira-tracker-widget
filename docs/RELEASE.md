@@ -71,6 +71,13 @@ Useful env vars:
 | `DEVELOPMENT_TEAM` | Apple Team ID |
 | `NOTARY_PROFILE` | notarytool keychain profile (default `JiraSprintTracker`) |
 | `SKIP_NOTARIZE=1` | Build/sign/zip only (not for public distribution) |
+| `ALLOW_DEVELOPMENT_SIGN=1` | Package with Apple Development if Developer ID is missing (team-local only) |
+
+## Important: Developer ID required for teammate installs
+
+Homebrew installs for people **outside** your Apple Developer team need a **Developer ID Application** certificate + notarization.
+
+If Keychain only has `Apple Development: …`, create and install Developer ID Application first, then run `./scripts/release.sh` again and replace the GitHub Release asset + cask `sha256`.
 
 On success the script prints the zip path and **sha256**.
 

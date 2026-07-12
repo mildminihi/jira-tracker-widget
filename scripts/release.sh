@@ -52,9 +52,19 @@ fi
 
 # Prefer an exact Developer ID identity if present
 if ! security find-identity -v -p codesigning | grep -q "Developer ID Application"; then
-  die "No 'Developer ID Application' certificate in Keychain.
+  if [[ "${ALLOW_DEVELOPMENT_SIGN:-0}" == "1" ]]; then
+    echo "warning: No Developer ID Application certificate; packaging with Apple Development (SKIP_NOTARIZE forced)."
+    echo "         Teammates outside your Apple team will hit Gatekeeper / signing errors."
+    echo "         Create a Developer ID Application cert, then re-run without ALLOW_DEVELOPMENT_SIGN."
+    SKIP_NOTARIZE=1
+    SIGN_IDENTITY="Apple Development"
+  else
+    die "No 'Developer ID Application' certificate in Keychain.
 Create one at https://developer.apple.com/account/resources/certificates/list
-then install it in Keychain Access."
+then install it in Keychain Access.
+
+Or for a local-only package: ALLOW_DEVELOPMENT_SIGN=1 ./scripts/release.sh"
+  fi
 fi
 
 ZIP_NAME="JiraSprintTracker-${VERSION}.zip"
