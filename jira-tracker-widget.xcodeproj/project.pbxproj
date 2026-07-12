@@ -51,7 +51,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		54DF8FEE30032B6D004CDFC8 /* jira-tracker-widget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "jira-tracker-widget.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		54DF8FEE30032B6D004CDFC8 /* jira-tracker-widget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "jira-tracker-widget.app"; path = "Jira Sprint Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		54DF8FFB30032B70004CDFC8 /* jira-tracker-widgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "jira-tracker-widgetTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		54DF900530032B70004CDFC8 /* jira-tracker-widgetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "jira-tracker-widgetUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		54DF9A1C30032BE0004CDFC8 /* jira-tracker-widget-extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "jira-tracker-widget-extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -254,8 +254,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				54DF9A2230032BE0004CDFC8 /* jira-tracker-widget-extension */,
 				54DF904430032C00004CDFC8 /* Shared */,
+				54DF9A2230032BE0004CDFC8 /* jira-tracker-widget-extension */,
 			);
 			name = "jira-tracker-widget-extension";
 			packageProductDependencies = (
@@ -429,7 +429,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 95XJ945C4A;
+				DEVELOPMENT_TEAM = 3D465Z2MU3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -495,7 +495,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 95XJ945C4A;
+				DEVELOPMENT_TEAM = 3D465Z2MU3;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -616,7 +616,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 95XJ945C4A;
+				DEVELOPMENT_TEAM = 3D465Z2MU3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MARKETING_VERSION = 1.0;
@@ -627,7 +627,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jira-tracker-widget.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/jira-tracker-widget";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Jira Sprint Tracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Jira Sprint Tracker";
 			};
 			name = Debug;
 		};
@@ -638,7 +638,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 95XJ945C4A;
+				DEVELOPMENT_TEAM = 3D465Z2MU3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MARKETING_VERSION = 1.0;
@@ -649,7 +649,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jira-tracker-widget.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/jira-tracker-widget";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Jira Sprint Tracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Jira Sprint Tracker";
 			};
 			name = Release;
 		};
@@ -659,7 +659,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 95XJ945C4A;
+				DEVELOPMENT_TEAM = 3D465Z2MU3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.supanat.jira-tracker-widgetUITests";
@@ -679,7 +679,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 95XJ945C4A;
+				DEVELOPMENT_TEAM = 3D465Z2MU3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.supanat.jira-tracker-widgetUITests";

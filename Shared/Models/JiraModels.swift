@@ -1,12 +1,12 @@
 import Foundation
 
-struct WidgetConfig: Codable, Equatable {
+struct SprintConfig: Codable, Equatable {
     var jiraDomain: String
     var email: String
     var apiToken: String
     var pairs: [ProjectBoardPair]
 
-    static let empty = WidgetConfig(
+    static let empty = SprintConfig(
         jiraDomain: "",
         email: "",
         apiToken: "",
@@ -49,7 +49,7 @@ struct ProjectBoardPair: Codable, Equatable, Identifiable {
     }
 }
 
-enum WidgetError: Equatable {
+enum SprintError: Equatable {
     case notConfigured
     case authFailed
     case boardNotFound(projectKey: String, boardId: Int)
@@ -140,9 +140,9 @@ struct SprintSection: Identifiable, Equatable, Codable {
     let statusGroups: [StatusGroup]
 }
 
-enum WidgetLoadResult: Equatable {
+enum SprintLoadResult: Equatable {
     case success(sections: [SprintSection], jiraDomain: String)
-    case failure(WidgetError)
+    case failure(SprintError)
 }
 
 struct SprintListResponse: Decodable {

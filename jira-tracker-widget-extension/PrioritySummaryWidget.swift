@@ -47,11 +47,11 @@ struct PrioritySummaryProvider: TimelineProvider {
                 title: "",
                 isUrgent: false,
                 counts: [],
-                errorMessage: WidgetError.notConfigured.message
+                errorMessage: SprintError.notConfigured.message
             )
         }
 
-        let result = await apiClient.fetchWidgetData(config: config)
+        let result = await apiClient.fetchSprintData(config: config)
         switch result {
         case let .success(sections, _):
             let scoped = SprintMetrics.scopedSections(sections, preferences: preferences, pairs: config.pairs)

@@ -2,7 +2,7 @@ import Foundation
 
 enum AppConstants {
     static let appGroupID = "group.supanat.wanroj.jira-tracker-widget"
-    static let configKey = "widgetConfig"
+    static let configKey = "widgetConfig" // legacy key name; keep for existing installs
     static let preferencesKey = "appPreferences"
     static let refreshHealthKey = "refreshHealth"
     static let testResultsKey = "testResults"

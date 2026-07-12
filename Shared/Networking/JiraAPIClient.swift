@@ -53,7 +53,7 @@ struct JiraAPIClient {
         self.decoder = decoder
     }
 
-    func testConnection(config: WidgetConfig) async -> (authOK: Bool, results: [ConnectionTestResult]) {
+    func testConnection(config: SprintConfig) async -> (authOK: Bool, results: [ConnectionTestResult]) {
         guard config.isConfigured else {
             return (false, [])
         }
@@ -135,7 +135,7 @@ struct JiraAPIClient {
         return (true, results)
     }
 
-    func fetchWidgetData(config: WidgetConfig) async -> WidgetLoadResult {
+    func fetchSprintData(config: SprintConfig) async -> SprintLoadResult {
         guard config.isConfigured else {
             return .failure(.notConfigured)
         }
@@ -206,12 +206,12 @@ struct JiraAPIClient {
         return .success(sections: sections, jiraDomain: config.normalizedDomain)
     }
 
-    private func validateAuth(config: WidgetConfig) async throws -> JiraMyselfResponse {
+    private func validateAuth(config: SprintConfig) async throws -> JiraMyselfResponse {
         let url = try makeURL(config: config, path: "/rest/api/3/myself")
         return try await request(url: url, config: config)
     }
 
-    private func fetchOpenSprints(config: WidgetConfig, boardId: Int) async throws -> [JiraSprint] {
+    private func fetchOpenSprints(config: SprintConfig, boardId: Int) async throws -> [JiraSprint] {
         let path = "/rest/agile/1.0/board/\(boardId)/sprint?state=active,future"
         let url = try makeURL(config: config, path: path)
         let response: SprintListResponse = try await request(url: url, config: config)
@@ -219,7 +219,7 @@ struct JiraAPIClient {
     }
 
     private func fetchSprintIssues(
-        config: WidgetConfig,
+        config: SprintConfig,
         sprintId: Int,
         projectKey: String
     ) async throws -> [JiraIssue] {
@@ -279,8 +279,13 @@ struct JiraAPIClient {
             let progress = Double(doneCount) / Double(issues.count)
             let daysRemaining = sprint.endDate.map(daysRemainingUntil)
             let projectKey = pair.projectKey.trimmingCharacters(in: .whitespacesAndNewlines)
-            let boardURL = URL(string: "\(jiraDomain)/jira/software/c/projects/\(projectKey)/boards/\(pair.boardId)")!
-            let sprintURL = URL(string: "\(boardURL.absoluteString)?sprint=\(sprint.id)")!
+            let encodedProject = projectKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? projectKey
+            guard let boardURL = URL(string: "\(jiraDomain)/jira/software/c/projects/\(encodedProject)/boards/\(pair.boardId)"),
+                  var sprintComponents = URLComponents(url: boardURL, resolvingAgainstBaseURL: false) else {
+                return nil
+            }
+            sprintComponents.queryItems = [URLQueryItem(name: "sprint", value: String(sprint.id))]
+            guard let sprintURL = sprintComponents.url else { return nil }
 
             let grouped = Dictionary(grouping: issues, by: \.statusName)
             let sortedStatusNames = grouped.keys.sorted()
@@ -288,8 +293,12 @@ struct JiraAPIClient {
             let statusGroups: [StatusGroup] = sortedStatusNames.compactMap { statusName in
                 guard let statusIssues = grouped[statusName] else { return nil }
 
-                let displays = statusIssues.map { issue in
-                    JiraIssueDisplay(
+                let displays = statusIssues.compactMap { issue -> JiraIssueDisplay? in
+                    let encodedKey = issue.key.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? issue.key
+                    guard let browseURL = URL(string: "\(jiraDomain)/browse/\(encodedKey)") else {
+                        return nil
+                    }
+                    return JiraIssueDisplay(
                         id: issue.key,
                         key: issue.key,
                         summary: issue.summary,
@@ -297,7 +306,7 @@ struct JiraAPIClient {
                         statusCategoryKey: issue.statusCategoryKey,
                         priorityName: issue.priorityName,
                         priorityId: issue.priorityId,
-                        browseURL: URL(string: "\(jiraDomain)/browse/\(issue.key)")!
+                        browseURL: browseURL
                     )
                 }
 
@@ -332,7 +341,7 @@ struct JiraAPIClient {
         return calendar.dateComponents([.day], from: start, to: end).day ?? 0
     }
 
-    private func makeURL(config: WidgetConfig, path: String) throws -> URL {
+    private func makeURL(config: SprintConfig, path: String) throws -> URL {
         let domain = config.normalizedDomain
         guard let url = URL(string: domain + path) else {
             throw JiraAPIError.invalidDomain
@@ -342,7 +351,7 @@ struct JiraAPIClient {
 
     private func request<T: Decodable>(
         url: URL,
-        config: WidgetConfig,
+        config: SprintConfig,
         method: String = "GET",
         body: Encodable? = nil
     ) async throws -> T {
@@ -378,7 +387,7 @@ struct JiraAPIClient {
         }
     }
 
-    private func makeAuthHeader(config: WidgetConfig) -> String {
+    private func makeAuthHeader(config: SprintConfig) -> String {
         let credential = "\(config.email):\(config.apiToken)"
         let encoded = Data(credential.utf8).base64EncodedString()
         return "Basic \(encoded)"

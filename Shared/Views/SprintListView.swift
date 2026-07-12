@@ -38,7 +38,7 @@ struct SprintListView: View {
 }
 
 struct SprintErrorView: View {
-    let error: WidgetError
+    let error: SprintError
 
     var body: some View {
         VStack(spacing: 10) {

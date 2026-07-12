@@ -4,7 +4,7 @@ import WidgetKit
 
 @MainActor
 final class SprintDataStore: ObservableObject {
-    @Published private(set) var result: WidgetLoadResult = .failure(.notConfigured)
+    @Published private(set) var result: SprintLoadResult = .failure(.notConfigured)
     @Published private(set) var isLoading = false
     @Published private(set) var lastUpdated: Date?
     @Published var preferences: AppPreferences
@@ -29,7 +29,7 @@ final class SprintDataStore: ObservableObject {
         }
     }
 
-    var config: WidgetConfig {
+    var config: SprintConfig {
         AppGroupStorage.loadConfig() ?? .empty
     }
 
@@ -79,12 +79,12 @@ final class SprintDataStore: ObservableObject {
 
         guard let config = AppGroupStorage.loadConfig() else {
             result = .failure(.notConfigured)
-            persistHealth(success: false, message: WidgetError.notConfigured.message)
+            persistHealth(success: false, message: SprintError.notConfigured.message)
             return
         }
 
         ensureSelectedPair(using: config)
-        let loadResult = await apiClient.fetchWidgetData(config: config)
+        let loadResult = await apiClient.fetchSprintData(config: config)
         result = loadResult
         lastUpdated = Date()
 
@@ -98,7 +98,7 @@ final class SprintDataStore: ObservableObject {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
-    private func ensureSelectedPair(using config: WidgetConfig? = nil) {
+    private func ensureSelectedPair(using config: SprintConfig? = nil) {
         let currentConfig = config ?? self.config
         let valid = currentConfig.validPairs
         guard !valid.isEmpty else {

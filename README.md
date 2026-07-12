@@ -61,7 +61,7 @@ Each person uses their own API token. Credentials stay on the local machine in t
 
 ## Develop from source
 
-Prerequisites: Xcode 15+, Apple signing team (personal ID is fine for local runs).
+Prerequisites: Xcode 15+, an Apple ID signing team (Personal Team is fine for local runs).
 
 ```bash
 git clone https://github.com/mildminihi/jira-tracker-widget.git
@@ -74,6 +74,21 @@ open jira-tracker-widget.xcodeproj
 3. Confirm App Group on both targets: `group.supanat.wanroj.jira-tracker-widget`
 4. Run the **jira-tracker-widget** scheme (Cmd+R)
 
+Unit tests (no Jira credentials required):
+
+```bash
+xcodebuild test -scheme jira-tracker-widget -destination 'platform=macOS' -only-testing:jira-tracker-widgetTests
+```
+
+**Signing notes**
+
+| Audience | What you need |
+|---|---|
+| Local develop / debug | Any Apple ID team + automatic signing |
+| Distribute via Homebrew / share outside your Mac | Apple Developer Program + **Developer ID Application** + notarization ([docs/RELEASE.md](docs/RELEASE.md)) |
+
+Released builds are signed with Developer ID team `3D465Z2MU3` (maintainer). Your local Team ID will differ; that is expected.
+
 ## Project structure
 
 ```
@@ -81,6 +96,7 @@ jira-tracker-widget/
 ├── jira-tracker-widget/            Menu bar app + Settings
 ├── jira-tracker-widget-extension/  Small priority summary widget
 ├── Shared/                         Models, API client, UI, storage
+├── docs/                           Release guide (+ archive/ old plans)
 └── scripts/                        Release / notarize helpers
 ```
 
