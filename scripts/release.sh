@@ -17,6 +17,11 @@ SIGN_IDENTITY="${CODE_SIGN_IDENTITY:-Developer ID Application}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-JiraSprintTracker}"
 SKIP_NOTARIZE="${SKIP_NOTARIZE:-0}"
 
+# Automatic signing rejects a fully-qualified identity string; keep the generic name.
+if [[ "$SIGN_IDENTITY" == Developer\ ID\ Application:* ]]; then
+  SIGN_IDENTITY="Developer ID Application"
+fi
+
 die() { echo "error: $*" >&2; exit 1; }
 
 need_cmd() { command -v "$1" >/dev/null 2>&1 || die "missing command: $1"; }
@@ -90,21 +95,23 @@ cat > "$EXPORT_OPTIONS" <<EOF
 EOF
 
 echo "==> Archiving ${SCHEME} (${VERSION}) with team ${TEAM_ID}"
+# Archive with automatic development signing; exportOptions re-signs as Developer ID.
 xcodebuild archive \
   -project "$PROJECT" \
   -scheme "$SCHEME" \
   -configuration Release \
   -archivePath "$ARCHIVE_PATH" \
   -destination "generic/platform=macOS" \
+  -allowProvisioningUpdates \
   DEVELOPMENT_TEAM="$TEAM_ID" \
-  CODE_SIGN_STYLE=Automatic \
-  CODE_SIGN_IDENTITY="$SIGN_IDENTITY"
+  CODE_SIGN_STYLE=Automatic
 
 echo "==> Exporting Developer ID app"
 xcodebuild -exportArchive \
   -archivePath "$ARCHIVE_PATH" \
   -exportPath "$EXPORT_DIR" \
-  -exportOptionsPlist "$EXPORT_OPTIONS"
+  -exportOptionsPlist "$EXPORT_OPTIONS" \
+  -allowProvisioningUpdates
 
 APP_PATH="${EXPORT_DIR}/${APP_NAME}.app"
 [[ -d "$APP_PATH" ]] || die "export did not produce ${APP_NAME}.app (look in ${EXPORT_DIR})"
