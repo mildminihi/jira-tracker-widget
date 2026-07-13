@@ -38,6 +38,10 @@ Each person uses their own API token. Credentials stay on the local machine in t
 
 ## Features
 
+<img width="88" height="33" alt="menu bar" src="https://github.com/user-attachments/assets/217c5fbd-3441-4c1d-80e8-c674d31e44bd" />
+</br>
+<img width="466" height="566" alt="sprint detail" src="https://github.com/user-attachments/assets/e0931db2-b3b9-4f1d-9bae-31573d75c609" />
+
 - Menu bar summary: nearest sprint days left + non-Done count (`3d · 5`), tinted when urgent
 - Popover scope: **This board** / **All** (remembered), with board picker
 - Filters: **All / Active / In Progress** chips (default Active) + search by key/summary
@@ -49,6 +53,8 @@ Each person uses their own API token. Credentials stay on the local machine in t
 - Refreshes about every 30 minutes, on manual refresh, and in the background
 
 ## Optional widget
+
+<img width="203" height="181" alt="widget" src="https://github.com/user-attachments/assets/1b3d2da8-f4b5-4264-bc00-a29642a511d3" />
 
 1. Right-click the desktop → **Edit Widgets**
 2. Search for **Jira Priority Summary**
